@@ -1,0 +1,16 @@
+[Version:1]
+TextContent 
+{
+	ZilchScriptBuilder 
+	{
+		var Name = "LPK_PlatformerCharacterController"
+		var ResourceId = 0x5aa5e7c8749e256e
+	}
+	ContentTags 
+	{
+		var Tags = Array
+		{
+			"LearningPrototypingKit"
+		}
+	}
+}

@@ -1,0 +1,95 @@
+/*******************************************************************************
+File:           LPK_ChangeTextOnEvent.zilchscript
+Authors:        Victor Cecci
+Last Updated:   5/30/2018
+Last Version:   1.4.0.941
+
+Description:
+  This component can be added to any object to cause a specified object's 
+  SpriteText component's its Visible, Font, FontSize or VertexColor properties 
+  to change upon receiving a specified event
+
+This script is a basic implementation of its functionality. It is designed for
+educational purposes and aimed to help beginners.
+
+Copyright 2018-2019, DigiPen Institute of Technology
+******************************************************************************/
+class LPK_ChangeTextOnEvent : ZilchComponent
+{
+  //Which event will trigger this component's action
+  [Property]
+  var EventTrigger : LPKEvents = LPKEvents.CollisionStarted;
+  
+  //Target object whose sprite will be modified. Set to Owner by default
+  [Property]
+  var TragetSpriteTextPath : CogPath = CogPath(".");
+  
+  //Whether the Visible property should be modified
+  [Property]
+  var ModifyVisible : Boolean = true;
+  
+  //Value to set the Visible property to
+  [Property]
+  var NewVisible : Boolean = true;
+  
+  //Whether the Vertex property should be modified
+  [Property]
+  var ModifyVertexColor : Boolean = true;
+  
+  //Value to set the VertexColor property to
+  [Property]
+  var NewVertexColor : Real4 = Real4(1,1,1,1);
+  
+  //Whether the Font property should be modified
+  [Property]
+  var ModifyFont : Boolean = true;
+  
+  //Value to set the Font property to
+  [Property]
+  var NewFont : Font = Font.Inconsolata;
+  
+  //Whether the FontSize property should be modified
+  [Property]
+  var ModifyFontSize : Boolean = true;
+  
+  //Value to set the FintSize property to
+  [Property]
+  var NewFontSize : Integer = 32;
+  
+  //***************************************************************************
+  function Initialize(init : CogInitializer)
+  {
+    //Connect to the specified event
+    Zero.Connect(this.Owner, "`this.EventTrigger`", this.OnEvent);
+  }
+  
+  //***************************************************************************
+  function OnEvent(event : Event)
+  {
+    //Give an error if the Target wasn't specified
+    var obj = this.TragetSpriteTextPath.Cog;
+    if(obj == null)
+      throw Exception("No Specified Target!");
+    
+    //Give an error if the specified Target doesnt have a SpriteText component
+    if(obj.SpriteText == null)
+      throw Exception("Target does not have a SpriteText component");
+      
+    //Change the Visible property, if applicable
+    if(this.ModifyVisible)
+      obj.SpriteText.Visible = this.NewVisible;
+      
+    //Change the VertexColor property, if applicable
+    if(this.ModifyVertexColor)
+      obj.SpriteText.VertexColor = this.NewVertexColor;
+      
+    //Change the Font property, if applicable
+    if(this.ModifyFont)
+      obj.SpriteText.Font = this.NewFont;
+      
+      //Change the Font property, if applicable
+    if(this.ModifyFontSize)
+      obj.SpriteText.FontSize = this.NewFontSize;
+    
+  }
+}

@@ -1,0 +1,51 @@
+/*******************************************************************************
+File:           LPK_DebugDrawOnFrameUpdate.zilchscript
+Authors:        Doug Zwick
+Last Updated:   6/1/2018
+Last Version:   1.4.0.1018
+
+Description:
+  Calls DebugDraw on an object every frame, to aid in debugging.
+  
+This script is a basic implementation of its functionality. It is designed for
+educational purposes and aimed to help beginners.
+
+Copyright 2018-2019, DigiPen Institute of Technology
+******************************************************************************/
+[RunInEditor]
+class LPK_DebugDrawOnFrameUpdate : ZilchComponent
+{
+  [Property] var InGame : Boolean = true;
+  [Property] var InEditor : Boolean = true;
+  [Property] var Recursive : Boolean = false;
+  
+  function Initialize(init : CogInitializer)
+  {
+    Zero.Connect(this.Space, Events.FrameUpdate, this.OnFrameUpdate);
+  }
+  
+  function OnFrameUpdate(event : UpdateEvent)
+  {
+    var isEditorMode = this.Space.IsEditorMode;
+    if (!this.InGame && !isEditorMode || !this.InEditor && isEditorMode)
+      return;
+    
+    if (this.Recursive)
+      this.RecursiveDraw(this.Owner);
+    else
+      this.Draw(this.Owner);
+  }
+  
+  function RecursiveDraw(cog : Cog)
+  {
+    this.Draw(cog);
+    
+    foreach (var child in cog.Children)
+      this.RecursiveDraw(child);
+  }
+  
+  function Draw(cog : Cog)
+  {
+    cog.DebugDraw();
+  }
+}

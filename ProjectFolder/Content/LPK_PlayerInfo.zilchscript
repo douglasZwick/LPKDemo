@@ -1,0 +1,84 @@
+/*******************************************************************************
+File:           LPK_PlayerInfo.zilchscript
+Authors:        Victor Cecci
+Last Updated:   5/10/2018
+Last Version:   1.4.0.941
+
+Description:
+  This script is meant to be added to the player character only and it MetaInterface
+  with the LPK_CharacterInfo script
+
+This script is a basic implementation of its functionality. It is designed for
+educational purposes and aimed to help beginners.
+
+Copyright 2018-2019, DigiPen Institute of Technology
+******************************************************************************/
+class LPK_PlayerInfo : ZilchComponent
+{
+  [Dependency] var Transform : Transform;
+  [Dependency] var LPK_CharacterInfo : LPK_CharacterInfo;
+  
+  //How many lives does the player have
+  [Property]
+  var Lives : Integer = 3;
+  
+  //Object with a sprite text to display the current number of lives
+  [Property]
+  var LivesDisplayObject : CogPath = CogPath();
+  
+  //Sound Effect to play on death
+  [Property]
+  var DeathSound : SoundCue = null;
+  
+  //The position to respawn upon death. Either set to last checkpoint or starting position
+  var RespawnPos : Real3 = Real3(0,0,0);
+  
+  
+  //***************************************************************************
+  function Initialize(init : CogInitializer)
+  {
+    //Set checkpoint position to Starting position
+    this.RespawnPos = this.Transform.WorldTranslation;
+    
+    //Update Display
+    this.UpdateLivesDisplay();
+  }
+  
+  //***************************************************************************
+  
+  function Death()
+  {
+    //Decrement Lives
+    --this.Lives;
+    
+    //Update Display
+    this.UpdateLivesDisplay();
+    
+    //Play the death sound effect
+    if(this.DeathSound != null)
+      this.Space.SoundSpace.PlayCue(this.DeathSound);
+      
+    //Reset Player's velocity if there is a RigidBody
+    if(this.Owner.RigidBody != null)
+      this.Owner.RigidBody.Velocity = Real3(0,0,0);
+    
+    //Reset the level when lives reaches 0
+    if(this.Lives <= 0)
+    {
+      this.Space.ReloadLevel();
+    }
+    
+    //Place the player back at LastCheckpointPos
+    this.Transform.WorldTranslation = this.RespawnPos;
+  }
+  //***************************************************************************
+  
+  function UpdateLivesDisplay()
+  {
+    //UpdateDisplay if one exists and has a SpriteText component
+    if(this.LivesDisplayObject.Cog != null && this.LivesDisplayObject.Cog.SpriteText != null)
+      this.LivesDisplayObject.Cog.SpriteText.Text = "`this.Lives`";
+  }
+  
+  
+}

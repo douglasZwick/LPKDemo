@@ -1,0 +1,58 @@
+/*******************************************************************************
+File:           LPK_Checkpoint.zilchscript
+Authors:        Victor Cecci
+Last Updated:   5/7/2018
+Last Version:   1.4.0.941
+
+Description:
+  This component can be added to an object with a collider to turn it into a
+  checkpoint. When a player collides with it and dies later, it will respawn
+  at this object's position.
+
+This script is a basic implementation of its functionality. It is designed for
+educational purposes and aimed to help beginners.
+
+Copyright 2018-2019, DigiPen Institute of Technology
+******************************************************************************/
+class LPK_Checkpoint : ZilchComponent
+{
+  
+  [Dependency] var Collider : Collider;
+  
+  //Whether this component perform its logic
+  [Property]
+  var Active : Boolean = true;
+  
+  //Object whose's Transform's position will be used as respawn position. If none is set the Owner position is used.
+  [Property]
+  var TargetTransformPath : CogPath = CogPath();
+  
+  //***************************************************************************
+  function Initialize(init : CogInitializer)
+  {
+    //Connect to CollisionStarted event
+    Zero.Connect(this.Owner, Events.CollisionStarted, this.OnCollisionStarted);
+  }
+  
+  //***************************************************************************
+  function OnCollisionStarted(event : CollisionEvent)
+  {
+    //If this component isnt active, do nothing
+    if(!this.Active)
+      return;
+    
+    //Upon colliding with the player, set its respawn position
+    if(event.OtherObject.LPK_PlayerInfo != null)
+    {
+      //Set respawn position the target's position. If no target was provided use the owner's position
+      if(this.TargetTransformPath.Cog == null)
+      {
+        event.OtherObject.LPK_PlayerInfo.RespawnPos = this.Owner.Transform.WorldTranslation;
+      }
+      else
+      {
+        event.OtherObject.LPK_PlayerInfo.RespawnPos = this.TargetTransformPath.Cog.Transform.WorldTranslation;
+      }
+    }
+  }
+}

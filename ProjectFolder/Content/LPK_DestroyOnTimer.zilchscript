@@ -1,0 +1,46 @@
+/*******************************************************************************
+File:           LPK_DestroyOnTimer.zilchscript
+Authors:        Victor Cecci
+Last Updated:   5/7/2018
+Last Version:   1.4.0.941
+
+Description:
+  This component can be used on any object and will cause it to 
+  destroy itself after a specified amount of time
+
+This script is a basic implementation of its functionality. It is designed for
+educational purposes and aimed to help beginners.
+
+Copyright 2018-2019, DigiPen Institute of Technology
+******************************************************************************/
+class LPK_DestroyOnTimer : ZilchComponent
+{
+  //How long until the object is destroyed in seconds
+  [Property]
+  var TimeUntilDestruction : Real = 5.0;
+  
+  //Internal timer
+  var Timer : Real = 0.0;
+  
+  //***************************************************************************
+  function Initialize(init : CogInitializer)
+  {
+    //Connect to LogicUpdate event
+    Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+  }
+  
+  //***************************************************************************
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+    
+    //Increment timer by time passed
+    this.Timer += event.Dt;
+    
+    //If timer surpassed the specified time
+    if(this.Timer >= this.TimeUntilDestruction)
+    {
+      //Destroy Owner
+      this.Owner.Destroy();
+    }
+  }
+}

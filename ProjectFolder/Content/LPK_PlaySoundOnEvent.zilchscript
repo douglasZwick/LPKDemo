@@ -1,0 +1,51 @@
+/*******************************************************************************
+File:           LPK_PlaySoundOnEvent.zilchscript
+Authors:        Victor Cecci
+Last Updated:   5/30/2018
+Last Version:   1.4.0.941
+
+Description:
+  This component can be added to any object to play a SoundCue upon receiving a 
+  specified event.
+
+This script is a basic implementation of its functionality. It is designed for
+educational purposes and aimed to help beginners.
+
+Copyright 2018-2019, DigiPen Institute of Technology
+******************************************************************************/
+class LPK_PlaySoundOnEvent : ZilchComponent
+{
+  
+  //Which event will trigger this component's action
+  [Property]
+  var EventTrigger : LPKEvents = LPKEvents.CollisionStarted;
+  
+  //What Sound Cue to play
+  [Property]
+  var Sound : SoundCue = null;
+  
+  //Play the sound on a local emitter if one exists. Otherwise it will be played on space.
+  [Property]
+  var PlayOnEmitter : Boolean  = false;
+  
+  //***************************************************************************
+  function Initialize(init : CogInitializer)
+  {
+    //Connect to the specified event
+    Zero.Connect(this.Owner, "`this.EventTrigger`", this.OnEvent);
+  }
+  
+  //***************************************************************************
+  function OnEvent(event : Event)
+  {
+    //Throw error if no sound is specified
+    if(this.Sound == null)
+      throw Exception("No Sound Specified!");
+      
+    //Play sound on emitter if one exists, otherwise play on space
+    if(this.PlayOnEmitter && this.Owner.SoundEmitter != null)
+      this.Owner.SoundEmitter.PlayCue(this.Sound);
+    else
+      this.Space.SoundSpace.PlayCue(this.Sound);
+  }
+}

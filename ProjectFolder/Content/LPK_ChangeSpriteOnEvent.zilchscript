@@ -1,0 +1,83 @@
+/*******************************************************************************
+File:           LPK_ChangeSpriteOnEvent.zilchscript
+Authors:        Victor Cecci
+Last Updated:   5/30/2018
+Last Version:   1.4.0.941
+
+Description:
+  This component can be added to any object to cause it to change a specified
+  object's Sprite component's its Visible, SpriteSource or VertexColor properties 
+  upon receiving a specified event
+
+This script is a basic implementation of its functionality. It is designed for
+educational purposes and aimed to help beginners.
+
+Copyright 2018-2019, DigiPen Institute of Technology
+******************************************************************************/
+class LPK_ChangeSpriteOnEvent : ZilchComponent
+{
+  //Which event will trigger this component's action
+  [Property]
+  var EventTrigger : LPKEvents = LPKEvents.CollisionStarted;
+  
+  //Target object whose sprite will be modified. Set to Owner by default
+  [Property]
+  var TragetSpritePath : CogPath = CogPath(".");
+  
+  //Should the Visible property be modified
+  [Property]
+  var ModifyVisible : Boolean = true;
+  
+  //Value to set the Visible property to
+  [Property]
+  var NewVisible : Boolean = true;
+  
+  //Should the VertexColor property be modified
+  [Property]
+  var ModifyVertexColor : Boolean = true;
+  
+  //Value to set the VertexColor property to
+  [Property]
+  var NewVertexColor : Real4 = Real4(1,1,1,1);
+  
+  //Should the SpriteSource property be modified
+  [Property]
+  var ModifySpriteSource : Boolean = true;
+  
+  //Value to set the SpriteSource property to
+  [Property]
+  var NewSpriteSource : SpriteSource = SpriteSource.Square;
+  
+  //***************************************************************************
+  function Initialize(init : CogInitializer)
+  {
+    //Connect to the specified event
+    Zero.Connect(this.Owner, "`this.EventTrigger`", this.OnEvent);
+  }
+  
+  //***************************************************************************
+  function OnEvent(event : Event)
+  {
+    //Give an error if the Target wasn't specified
+    var obj = this.TragetSpritePath.Cog;
+    if(obj == null)
+      throw Exception("No Specified Target!");
+    
+    //Give an error if the specified Target doesnt have a Sprite component
+    if(obj.Sprite == null)
+      throw Exception("Target does not have a Sprite component");
+      
+    //Change the Visible property, if applicable
+    if(this.ModifyVisible)
+      obj.Sprite.Visible = this.NewVisible;
+      
+    //Change the VertexColor property, if applicable
+    if(this.ModifyVertexColor)
+      obj.Sprite.VertexColor = this.NewVertexColor;
+      
+    //Change the SpriteSource property, if applicable
+    if(this.ModifySpriteSource)
+      obj.Sprite.SpriteSource = this.NewSpriteSource;
+    
+  }
+}

@@ -1,0 +1,119 @@
+/*******************************************************************************
+File:           LPK_SplineFollower.zilchscript
+Authors:        Victor Cecci
+Last Updated:   5/21/2018
+Last Version:   1.4.0.941
+
+Description:
+  This component can be added to an object to have it follow the control points
+  along a specified spline object.
+
+This script is a basic implementation of its functionality. It is designed for
+educational purposes and aimed to help beginners.
+
+Copyright 2018-2019, DigiPen Institute of Technology
+******************************************************************************/
+class LPK_SplineFollower : ZilchComponent
+{
+  
+  [Dependency] var Transform : Transform;
+  
+  //Target object with a HierarchySpline component to follow
+  [Property]
+  var TargetSpline : CogPath = CogPath();
+  
+  //Determines what the behavior should be upon reaching the end of the path
+  [Property]
+  var LoopMode : SplineLoopMode = SplineLoopMode.Reverse;
+  
+  [Property]
+  var FollowDirection : SplineFollowDirection = SplineFollowDirection.Forward;
+  
+  //Speed the object will move at while following the path
+  [Property]
+  var Speed : Real = 5.0;
+  
+  //Offset position from the spline applied throughout the object's movement
+  [Property]
+  var Offset : Real3 = Real3(0,0,0);
+  
+  //The current spline to follow
+  var Spline : Spline;
+  
+  //How far along the entire spline path are we currently (0 = beginning, 1 = end)
+  var CurrentDistance : Real = 0.0;
+  
+  //Which direction to follow along the spline (1.0 = forward, -1.0 = backward)
+  var Direction : Real = 0.0;
+  
+  //***************************************************************************
+  function Initialize(init : CogInitializer)
+  {
+    //If a target is set and it has a HierarchySpline component, set our current spline
+    if(this.TargetSpline.Cog != null && this.TargetSpline.Cog.HierarchySpline != null)
+      this.Spline = this.TargetSpline.Cog.HierarchySpline.Spline;
+      
+    //Determine sign based on direction
+    if(this.FollowDirection == SplineFollowDirection.Forward)
+      this.Direction = 1.0;
+    else
+      this.Direction = -1.0;
+    
+    Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+  }
+  
+  //***************************************************************************
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+    if(this.Spline == null)
+      return;
+      
+    //Sample the spline at the current distance
+    var data = this.Spline.SampleDistance(this.CurrentDistance);
+    
+    //Move the object to the target location
+    this.Transform.WorldTranslation = data.WorldPoint;
+    
+    //Update the distance based on given properties
+    this.UpdateDistance(event.Dt);
+  }
+  
+  function UpdateDistance(dt : Real)
+  {
+    
+    //Update the current distance based on the Speed
+    this.CurrentDistance += dt * this.Speed * this.Direction;
+    
+    //Get the spline's total distance
+    var totalDistance = this.Spline.TotalDistance;
+    
+    //Reverse the object's direction if Reverse mode is active and we've reached the spline's end or start
+    if(this.LoopMode ==  SplineLoopMode.Reverse)
+    {
+      //If we reached the end going forward, reverse it
+      if(this.CurrentDistance > totalDistance)
+      {
+        this.Direction = -1.0;
+        this.CurrentDistance -= (this.CurrentDistance - totalDistance) * 2.0;
+      }
+      //Otherwise, if we reach the start going backward, reverse it too
+      else if(this.CurrentDistance < 0.0)
+      {
+        this.Direction = 1.0;
+        this.CurrentDistance *= -1.0;
+      }
+    }
+    //If Stop mode is set, clamp the current distance by the total distance
+    else if(this.LoopMode == SplineLoopMode.Stop)
+      this.CurrentDistance = Math.Clamp(this.CurrentDistance, 0.0, totalDistance);
+      
+    //If Continue mode is set, modulo divide the current distance by the total distance
+    else if(this.LoopMode == SplineLoopMode.Continue)
+      this.CurrentDistance = Math.FMod(this.CurrentDistance, totalDistance);
+    
+  }
+}
+
+//Enums to provide settings for the LPK_SplineFollower component
+enum SplineLoopMode {Stop, Continue, Reverse}
+enum SplineFollowDirection {Forward, Backward}

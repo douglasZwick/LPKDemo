@@ -1,0 +1,45 @@
+/*******************************************************************************
+File:           LPK_HealthBar.zilchscript
+Authors:        Victor Cecci
+Last Updated:   5/7/2018
+Last Version:   1.4.0.941
+
+Description:
+  This compoennt controls the appearance of the health bar when hooked up to a
+  LPK_CharacterInfo component
+
+This script is a basic implementation of its functionality. It is designed for
+educational purposes and aimed to help beginners.
+
+Copyright 2018-2019, DigiPen Institute of Technology
+******************************************************************************/
+class LPK_HealthBar : ZilchComponent
+{
+  
+  //Cog Path pointing to the bar's gauge (usually a child object)
+  [Property]
+  var GaugeObj : CogPath = CogPath();
+  
+  //Cog Path pointing to the bar's fill (usually a child object)
+  [Property]
+  var FillObj : CogPath = CogPath();
+  
+  var GaugeWidth : Real = 0.0;
+  
+  //***************************************************************************
+  function Initialize(init : CogInitializer)
+  {
+    //Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+  }
+  
+  //***************************************************************************
+  function UpdateHealthDisplay(currentHealth : Integer, maxHealth : Integer)
+  {
+    //Grab the width of the gauge
+    this.GaugeWidth = this.GaugeObj.Cog.Area.Size.X;
+    
+    //Calculate the fill width and set it
+    var fillWidth = (this.GaugeWidth * currentHealth) / maxHealth;
+    this.FillObj.Cog.Area.Size = Real2(fillWidth, this.FillObj.Cog.Area.Size.Y);
+  }
+}

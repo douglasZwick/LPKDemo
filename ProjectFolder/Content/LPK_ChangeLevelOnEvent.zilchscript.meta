@@ -1,0 +1,16 @@
+[Version:1]
+TextContent 
+{
+	ZilchScriptBuilder 
+	{
+		var Name = "LPK_ChangeLevelOnEvent"
+		var ResourceId = 0x5b59e74a9e5a361c
+	}
+	ContentTags 
+	{
+		var Tags = Array
+		{
+			"LearningPrototypingKit"
+		}
+	}
+}

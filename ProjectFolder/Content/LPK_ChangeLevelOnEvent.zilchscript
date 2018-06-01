@@ -1,0 +1,42 @@
+/*******************************************************************************
+File:           LPK_ChangeLevelOnEvent.zilchscript
+Authors:        Victor Cecci
+Last Updated:   5/30/2018
+Last Version:   1.4.0.941
+
+Description:
+  This component can be added to an object to cause a new Level
+  to be loaded upon receiving a specified event
+
+This script is a basic implementation of its functionality. It is designed for
+educational purposes and aimed to help beginners.
+
+Copyright 2018-2019, DigiPen Institute of Technology
+******************************************************************************/
+class LPK_ChangeLevelOnEvent : ZilchComponent
+{
+  //Which event will trigger this component's action
+  [Property]
+  var EventTrigger : LPKEvents = LPKEvents.CollisionStarted;
+  
+  //The level resource to load upon collision
+  [Property]
+  var LevelToLoad : Level = null;
+  
+  //***************************************************************************
+  function Initialize(init : CogInitializer)
+  {
+    //Connect to the specified event
+    Zero.Connect(this.Owner, "`this.EventTrigger`", this.OnEvent);
+  }
+  
+  //***************************************************************************
+  function OnEvent(event : Event)
+  {
+    //Load the specified level
+    if(this.LevelToLoad != null)
+      this.Space.LoadLevel(this.LevelToLoad);
+    else
+      throw Exception("No Level Specified!");
+  }
+}

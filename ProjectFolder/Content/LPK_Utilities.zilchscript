@@ -1,0 +1,33 @@
+/*******************************************************************************
+File:           LPK_Utilities.zilchscript
+Authors:        Victor Cecci
+Last Updated:   5/15/2018
+Last Version:   1.4.0.941
+
+Description:
+  This script contains enumerations and static functions with the purpose of 
+  providing assisting functionality for other LPK classes
+
+This script is a basic implementation of its functionality. It is designed for
+educational purposes and aimed to help beginners.
+
+Copyright 2018-2019, DigiPen Institute of Technology
+******************************************************************************/
+
+//Types of events components can to respond to
+enum LPKEvents{ CollisionStarted,
+                CollisionEnded, 
+                CollisionPersisted, 
+                LeftMouseDown, 
+                LeftMouseUp, 
+                RightMouseDown,
+                RightMouseUp,
+                EnterView,
+                ExitView,
+                CogDestroy,
+                AllParticlesDead,
+                RigidBodyAwoke,
+                RigidBodySlept }
+
+//Types of collision events components can respond to 
+enum CollisionType {CollisionStarted, CollisionPersisted, CollisionEnded}

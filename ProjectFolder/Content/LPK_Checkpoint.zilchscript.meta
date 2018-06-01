@@ -1,0 +1,16 @@
+[Version:1]
+TextContent 
+{
+	ZilchScriptBuilder 
+	{
+		var Name = "LPK_Checkpoint"
+		var ResourceId = 0x5b5282cb24cfd79a
+	}
+	ContentTags 
+	{
+		var Tags = Array
+		{
+			"LearningPrototypingKit"
+		}
+	}
+}

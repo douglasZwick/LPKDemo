@@ -1,0 +1,33 @@
+[Version:1]
+Cog 
+{
+	var Name = "KillZone"
+	Transform 
+	{
+		var Translation = Real3{10.5, -10.5, 10}
+		var Scale = Real3{1, 1, 1}
+		var Rotation = Quaternion{0, 0, 0, 1}
+	}
+	BoxCollider 
+	{
+		var Ghost = true
+		var SendsEvents = true
+		var Material = "4de020863e872da8:DefaultPhysicsMaterial"
+		var CollisionGroup = "4e740859314e5515:DefaultGroup"
+		var Offset = Real3{0, 0, 0}
+		var HalfSize = Real3{0.5, 0.5, 0.5}
+	}
+	LPK_DebugDrawOnFrameUpdate 
+	{
+		var InGame = true
+		var InEditor = true
+		var Recursive = false
+	}
+	LPK_DamageOnCollision 
+	{
+		var Damage = 9999
+		var CollisionType = CollisionType.CollisionStarted
+		var DamageSound = "null"
+		var Team = 2
+	}
+}

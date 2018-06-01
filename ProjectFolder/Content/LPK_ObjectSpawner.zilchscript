@@ -1,0 +1,106 @@
+/*******************************************************************************
+File:           LPK_ObjectSpawner.zilchscript
+Authors:        Victor Cecci
+Last Updated:   5/10/2018
+Last Version:   1.4.0.941
+
+Description:
+  This component can be added to an object to cause instances of an Archetype
+  to spawn at its location
+
+This script is a basic implementation of its functionality. It is designed for
+educational purposes and aimed to help beginners.
+
+Copyright 2018-2019, DigiPen Institute of Technology
+******************************************************************************/
+class LPK_ObjectSpawner : ZilchComponent
+{
+  
+  [Dependency] var Transform : Transform;
+  [Dependency] var Orientation : Orientation;
+  
+  //Whether this component should perform its logic
+  [Property]
+  var Active : Boolean = true;
+  
+  //What Archetype should be spawned
+  [Property]
+  var ArchetypeToSpawn : Archetype = null;
+  
+  //Path to the object whose transform's position will be used as the spawn location. If none is provided the owner's transform will be used.
+  [Property]
+  var TargetTransformPath : CogPath = CogPath();
+  
+  //Max number of objects to spawn (will spawn infinite objects if set to 0)
+  [Property]
+  var MaxSpawnCount : Integer = 0;
+  
+  //Number of seconds to wait before spawning the first object
+  [Property]
+  var StartDelay : Real = 0.0;
+  
+  //Number of seconds to wait between spawning each object
+  [Property]
+  var SpawnInterval : Real = 1.0;
+  
+  //Speed to be applied to the spawned object in the Spawner's forward direction (Provided it has a RigidBody)
+  [Property]
+  var ObjectSpeed : Real = 0.0;
+  
+  //Internal Timer
+  var Timer : Real = 0.0;
+  
+  //Number of objects spawned so far
+  var SpawnCount : Integer = 0;
+  
+  //***************************************************************************
+  function Initialize(init : CogInitializer)
+  {
+    //Connect to the LogicUpdate event
+    Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+  }
+  
+  //***************************************************************************
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+    //Terminate if not active or no Archetype has been set
+    if(!this.Active || this.ArchetypeToSpawn == null)
+      return;
+      
+    //Increment Timer
+    this.Timer += event.Dt;
+    
+    //Only start spawning after the StartDelay
+    if(this.Timer >= this.StartDelay)
+    {
+      //Check whether we've reached the limit of objects to be spawned
+      if(this.SpawnCount < this.MaxSpawnCount || this.MaxSpawnCount == 0)
+      {
+        //If the timer has surpassed the interval
+        if(this.Timer - this.StartDelay >= this.SpawnInterval * this.SpawnCount)
+        {
+          
+          //Determine the spawn position
+          var spawnPos = Real3(0,0,0);
+          
+          //If no target transform is set, use the Owner's
+          if(this.TargetTransformPath.Cog == null)
+            spawnPos = this.Transform.WorldTranslation;
+          else
+            spawnPos = this.TargetTransformPath.Cog.Transform.WorldTranslation;
+          
+          
+          //Spawn Object at our owner's position and increment the SpawnCount
+          var obj = this.Space.CreateAtPosition(this.ArchetypeToSpawn, spawnPos);
+          ++this.SpawnCount;
+          
+          //If the spawned object has a RigidBody, apply a velocity in the Spawner's forward direction
+          if(obj.RigidBody != null)
+          {
+            obj.RigidBody.Velocity = this.Orientation.WorldForward * this.ObjectSpeed;
+          }
+        }
+      }
+    }
+  }
+}

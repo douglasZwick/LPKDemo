@@ -1,0 +1,16 @@
+[Version:1]
+TextContent 
+{
+	ZilchScriptBuilder 
+	{
+		var Name = "LPK_DestroyOnTimer"
+		var ResourceId = 0x5aa64bc0bc3ad0b4
+	}
+	ContentTags 
+	{
+		var Tags = Array
+		{
+			"LearningPrototypingKit"
+		}
+	}
+}

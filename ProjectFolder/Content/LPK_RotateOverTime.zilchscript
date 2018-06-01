@@ -1,0 +1,51 @@
+/*******************************************************************************
+File:           LPK_RotateOverTime.zilchscript
+Authors:        Victor Cecci
+Last Updated:   5/7/2018
+Last Version:   1.4.0.941
+
+Description:
+  This component can be applied to any object with a Transform to rotate it
+  over time.
+
+This script is a basic implementation of its functionality. It is designed for
+educational purposes and aimed to help beginners.
+
+Copyright 2018-2019, DigiPen Institute of Technology
+******************************************************************************/
+class LPK_RotateOverTime : ZilchComponent
+{
+  [Dependency] var Transform : Transform;
+  
+  //Whether this component should be active
+  [Property]
+  var Active : Boolean = true;
+  
+  //Speed of the rotation
+  [Property]
+  var Speed : Real = 5;
+  
+  //Axis of rotation (Will be normalized)
+  [Property]
+  var Axis : Real3 = Real3(0,0,1);
+  
+  //***************************************************************************
+  function Initialize(init : CogInitializer)
+  {
+    //Connect to LogicUpdate event
+    Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+  }
+  
+  //***************************************************************************
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+    if(!this.Active)
+      return;
+    
+    //Normalize the given axis
+    var normalAxis = Math.Normalize(this.Axis);
+    
+    //Apply Rotation
+    this.Owner.Transform.RotateAnglesWorld(Math.ToRadians(normalAxis * this.Speed) * event.Dt);
+  }
+}

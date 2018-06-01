@@ -1,0 +1,110 @@
+/*******************************************************************************
+File:           LPK_CharacterInfo.zilchscript
+Authors:        Victor Cecci
+Last Updated:   5/10/2018
+Last Version:   1.4.0.941
+
+Description:
+  This component provides all information relative to a character regarding its
+  health, team, etc. This can be used by both player and enemies.
+
+This script is a basic implementation of its functionality. It is designed for
+educational purposes and aimed to help beginners.
+
+Copyright 2018-2019, DigiPen Institute of Technology
+******************************************************************************/
+class LPK_CharacterInfo : ZilchComponent
+{
+  
+  [Dependency] var Transform : Transform;
+  
+  //Whether this character can take damage
+  [Property]
+  var Invulnerable : Boolean = false;
+  
+  //Maximum and starting health of the character
+  [Property]
+  var MaxHealth : Integer = 10;
+  
+  //Sound effect to play when damaged
+  [Property]
+  var DamageSound : SoundCue = null;
+  
+  //Sound effect to play when healed
+  [Property]
+  var HealSound : SoundCue = null;
+  
+  //What team this character belongs to (Objects from same team won't hurt eachother)
+  [Property]
+  var Team : Integer = 1;
+  
+  //Cog Path pointing to health bar object display
+  [Property]
+  var HealthBarObj : CogPath = CogPath();
+  
+  //Current character health
+  var Health : Integer = 0;
+  
+  //***************************************************************************
+  function Initialize(init : CogInitializer)
+  {
+    //Set starting health
+    this.Health = this.MaxHealth;
+    
+    //Update Display
+    if(this.HealthBarObj.Cog != null)
+      this.HealthBarObj.Cog.LPK_HealthBar.UpdateHealthDisplay(this.Health, this.MaxHealth);
+  }
+  
+  //***************************************************************************  
+  function TakeDamage(damage : Integer)
+  {
+    //Ignore if the player is invulnerable
+    if(this.Invulnerable)
+      return;
+    
+    //Subtract health
+    this.Health -= damage;
+    
+    //Play the damage sound effect
+    if(this.DamageSound != null)
+      this.Space.SoundSpace.PlayCue(this.DamageSound);
+    
+    //If health reaches 0, kill the character
+    if(this.Health <= 0)
+    {
+      if(this.Owner.LPK_PlayerInfo != null)
+        this.Owner.LPK_PlayerInfo.Death();
+      else
+        this.Owner.Destroy();
+        
+      //Reset health
+      this.Health = this.MaxHealth;
+    }
+    
+    //Update Display
+    if(this.HealthBarObj.Cog != null)
+      this.HealthBarObj.Cog.LPK_HealthBar.UpdateHealthDisplay(this.Health, this.MaxHealth);
+    
+  }
+  //*************************************************************************** 
+  function Heal(damage : Integer)
+  {
+    //Add health
+    this.Health += damage;
+    
+    //Play the heal sound effect
+    if(this.HealSound != null)
+      this.Space.SoundSpace.PlayCue(this.HealSound);
+      
+    //Cap it to MaxHealth
+    if(this.Health > this.MaxHealth)
+      this.Health = this.MaxHealth;
+      
+    //Update Display
+    if(this.HealthBarObj.Cog != null)
+      this.HealthBarObj.Cog.LPK_HealthBar.UpdateHealthDisplay(this.Health, this.MaxHealth);
+  }
+  
+  
+}

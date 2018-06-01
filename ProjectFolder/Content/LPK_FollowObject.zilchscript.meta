@@ -1,0 +1,17 @@
+[Version:1]
+TextContent 
+{
+	ZilchScriptBuilder 
+	{
+		var Name = "LPK_FollowObject"
+		var ResourceId = 0x5abd88ae5abd1181
+	}
+	ContentTags 
+	{
+		var Tags = Array
+		{
+			"LearningPrototypingKit"
+			"ZilchScript"
+		}
+	}
+}

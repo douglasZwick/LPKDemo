@@ -1,0 +1,49 @@
+/*******************************************************************************
+File:           LPK_HealOnCollision.zilchscript
+Authors:        Victor Cecci
+Last Updated:   5/10/2018
+Last Version:   1.4.0.941
+
+Description:
+  This component can be used on an object to have it heal upon colliding
+  with an object of the same team
+
+This script is a basic implementation of its functionality. It is designed for
+educational purposes and aimed to help beginners.
+
+Copyright 2018-2019, DigiPen Institute of Technology
+******************************************************************************/
+class LPK_HealOnCollision : ZilchComponent
+{
+  [Dependency] var Collider : Collider;
+  
+  
+  [Property]
+  var Heal : Integer = 5;
+  
+  //What event to use when detecting collision
+  [Property]
+  var CollisionType : CollisionType = CollisionType.CollisionStarted;
+  
+  //What team this object belongs to (Will only heal members of the same team)
+  [Property]
+  var Team : Integer = 1;
+  
+  //***************************************************************************
+  function Initialize(init : CogInitializer)
+  {
+    //Connect to the specified collision evnet
+    Zero.Connect(this.Owner, "`this.CollisionType`", this.OnCollision);
+  }
+  
+  //***************************************************************************
+  function OnCollision(event : CollisionEvent)
+  {
+    //If the other object doesnt have a CharacterInfo component or belongs to the same team, ignore it
+    if(event.OtherObject.LPK_CharacterInfo == null || event.OtherObject.LPK_CharacterInfo.Team != this.Team)
+      return;
+      
+    //Heal
+    event.OtherObject.LPK_CharacterInfo.Heal(this.Heal);
+  }
+}

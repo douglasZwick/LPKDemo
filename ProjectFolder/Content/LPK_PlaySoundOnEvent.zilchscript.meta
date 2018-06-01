@@ -1,0 +1,16 @@
+[Version:1]
+TextContent 
+{
+	ZilchScriptBuilder 
+	{
+		var Name = "LPK_PlaySoundOnEvent"
+		var ResourceId = 0x5b59ffe1dd41eb8f
+	}
+	ContentTags 
+	{
+		var Tags = Array
+		{
+			"LearningPrototypingKit"
+		}
+	}
+}

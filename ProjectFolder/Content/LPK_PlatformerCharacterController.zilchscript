@@ -1,0 +1,141 @@
+/*******************************************************************************
+File:           LPK_DynamicPlatformerController.zilchscript
+Authors:        Victor Cecci
+Last Updated:   5/7/2018
+Last Version:   1.4.0.941
+
+Description:
+  This component allows for using the keyboard to move a character by applying 
+  velocity to its dynamic rigidbody
+  
+This script is a basic implementation of its functionality. It is designed for
+educational purposes and aimed to help beginners.
+
+Copyright 2018-2019, DigiPen Institute of Technology
+******************************************************************************/
+class LPK_DynamicPlatformerController : ZilchComponent
+{
+  
+  [Dependency] var RigidBody : RigidBody;
+  
+  //Whether the character can move
+  [Property]
+  var CanMove : Boolean = true;
+  
+  //Whether the character can jump
+  [Property]
+  var CanJump : Boolean = true;
+  
+  //Velocity applied in the X axis when moving
+  [Property]
+  var MovementSpeed : Real = 2.0;
+  
+  //Deceleation to be applied every frame (Expected values from 0 to 1);
+  [Property][Slider(0,1)]
+  var Deceleration : Real = 0.2;
+  
+  //Velocity on the Y axis applied when jumping
+  [Property]
+  var JumpSpeed : Real = 8.0;
+  
+  //Maximum jumps allowed until the character becomes grounded
+  [Property]
+  var MaxJumps : Integer = 1;
+  
+  //Keyboard key used to move left
+  [Property]
+  var MoveLeftKey : Keys = Keys.A;
+  
+  //Keyboard key used to move right
+  [Property]
+  var MoveRightKey : Keys = Keys.D;
+  
+  //Keyboard key used to jump
+  [Property]
+  var JumpKey : Keys = Keys.Space;
+  
+  //Maximum distance to the ground from character's center that causes the character to be considered grounded
+  [Property]
+  var MaxGroundDetectionDistance : Real = 0.5;
+  
+  [Property]
+  var MaxSpeed : Real = 20;
+  
+  //Whether the character is currently grounded
+  var Grounded : Boolean = false;
+  
+  //Current number of jumps available. Resets when grounded.
+  var AvailableJumps : Real = 0;
+  
+  //***************************************************************************
+  function Initialize(init : CogInitializer)
+  {
+    //Connect to LogicUpdate event
+    Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+  }
+  
+  //***************************************************************************
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+    /*----------MOVEMENT---------- */
+    
+    //Variable to determine the movement direction
+    var moveDir = 0.0;
+    
+    if(Zero.Keyboard.KeyIsDown(this.MoveLeftKey))
+      moveDir -= 1.0;
+      
+    if(Zero.Keyboard.KeyIsDown(this.MoveRightKey))
+      moveDir += 1.0;
+      
+    if(this.CanMove)
+    {
+      //Take speed from previous frame and apply some deceleration
+      var oldSpeed = this.RigidBody.Velocity.X * (1 - this.Deceleration);
+      
+      //Calculate new speed to be added this frame
+      var newSpeed = moveDir * this.MovementSpeed;
+      
+      //Set character's new velocity based on the given movemnt input (leave the Y component as is)
+      var finalVelocity = Real3(oldSpeed + newSpeed, this.RigidBody.Velocity.Y, 0);
+      
+      var finalSpeed = Math.Length(finalVelocity);
+      var finalDirection = Math.Normalize(finalVelocity);
+      finalSpeed = Math.Clamp(finalSpeed, 0, this.MaxSpeed);
+      this.RigidBody.Velocity = finalSpeed * finalDirection;
+    }
+      
+    
+    /*----------GROUND DETECTION---------- */
+    
+    //Create a ray starting at the player's position that goes downward.
+    var ray = Ray();
+    ray.Start = this.Owner.Transform.WorldTranslation;
+    ray.Direction = -Real3.YAxis;
+    
+    //Cast the ray and store the result
+    var result = this.Space.PhysicsSpace.CastRayFirst(ray);
+    
+    //If we hit an object and the distance was smaller than specified
+    if(result.ObjectHit != null && result.Distance <= this.MaxGroundDetectionDistance)
+    {
+      //Set grounded flag and reset jumps
+      this.Grounded = true;
+      this.AvailableJumps = this.MaxJumps;
+    }
+      
+    //*----------JUMPING---------- */
+    
+    //If jump key is pressed and there are available jumps
+    if(Zero.Keyboard.KeyIsPressed(this.JumpKey) && this.AvailableJumps > 0)
+    {
+      //Apply upward velocity based on specified speed and decrease jumps available
+      var velocity = this.RigidBody.Velocity;
+      velocity.Y = this.JumpSpeed;
+      this.RigidBody.Velocity = velocity;
+      --this.AvailableJumps;
+      //this.RigidBody.Velocity += Real3(0, 1, 0) * this.JumpSpeed;
+    }
+    
+  }
+}

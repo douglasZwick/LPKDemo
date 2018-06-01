@@ -1,0 +1,52 @@
+/*******************************************************************************
+File:           LPK_FollowObject.zilchscript
+Authors:        Victor Cecci
+Last Updated:   5/7/2018
+Last Version:   1.4.0.941
+
+Description:
+  This component can be used on any object with a transform to follow
+  any other object with a transform
+
+This script is a basic implementation of its functionality. It is designed for
+educational purposes and aimed to help beginners.
+
+Copyright 2018-2019, DigiPen Institute of Technology
+******************************************************************************/
+class LPK_FollowObject : ZilchComponent
+{
+  [Dependency] var Transform : Transform;
+  
+  //The object we wish to follow. Can be changed at anytime. if none is specified, this component wont do anything
+  [Property]
+  var ObjectToFollow : CogPath = CogPath();
+  
+  //What offset to keep from the followed object
+  [Property]
+  var Offset : Real3 = Real3(0,0,0);
+  
+  //What percentage of the distance between my current position and the target's should I move every frame
+  [Property][Slider(0, 1)]
+  var InterpolationFactor : Real = 0.1;
+  
+  //***************************************************************************
+  function Initialize(init : CogInitializer)
+  {
+    //Connect to LogicUpdate event
+    Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+  }
+  
+  //***************************************************************************
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+    //If the target object doesnt exist or doesnt have a tranform, do nothing.
+    if(this.ObjectToFollow.Cog == null || this.ObjectToFollow.Cog.Transform == null)
+      return;
+    
+    //Get the world position of the target object + our desired distance
+    var targetPos = this.ObjectToFollow.Cog.Transform.WorldTranslation + this.Offset;
+    
+    //Interpolate from current position to target object's position
+    this.Transform.WorldTranslation = Math.Lerp(this.Transform.WorldTranslation, targetPos, this.InterpolationFactor);
+  }
+}

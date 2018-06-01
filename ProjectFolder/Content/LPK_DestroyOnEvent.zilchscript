@@ -1,0 +1,42 @@
+/*******************************************************************************
+File:           LPK_DestroyOnEvent.zilchscript
+Authors:        Victor Cecci
+Last Updated:   5/30/2018
+Last Version:   1.4.0.941
+
+Description:
+  This component can be added to any object to cause it to destroy a specified
+  target upon receiving a specified event.
+
+This script is a basic implementation of its functionality. It is designed for
+educational purposes and aimed to help beginners.
+
+Copyright 2018-2019, DigiPen Institute of Technology
+******************************************************************************/
+class LPK_DestroyOnEvent : ZilchComponent
+{
+  //Which event will trigger this component's action
+  [Property]
+  var EventTrigger : LPKEvents = LPKEvents.CollisionStarted;
+  
+  //What object to destroy when the event is received. Set to owner by default
+  [Property]
+  var DestructionTarget : CogPath = CogPath(".");
+  
+  //***************************************************************************
+  function Initialize(init : CogInitializer)
+  {
+    //Connect to the specified event
+    Zero.Connect(this.Owner, "`this.EventTrigger`", this.OnEvent);
+  }
+  
+  //***************************************************************************
+  function OnEvent(event : Event)
+  {
+    //Destroy the target 
+    if(this.DestructionTarget.Cog != null)
+      this.DestructionTarget.Cog.Destroy();
+    else
+      throw Exception("No DestructionTarget set!");
+  }
+}

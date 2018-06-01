@@ -1,0 +1,53 @@
+/*******************************************************************************
+File:           LPK_DamageOnCollision.zilchscript
+Authors:        Victor Cecci
+Last Updated:   5/10/2018
+Last Version:   1.4.0.941
+
+Description:
+  This component can be used on an object to have it cause damage upon colliding
+  with an object of a different team
+
+This script is a basic implementation of its functionality. It is designed for
+educational purposes and aimed to help beginners.
+
+Copyright 2018-2019, DigiPen Institute of Technology
+******************************************************************************/
+class LPK_DamageOnCollision : ZilchComponent
+{
+  [Dependency] var Collider : Collider;
+  
+  //Amount of damage dealt upon collision
+  [Property]
+  var Damage : Integer = 5;
+  
+  //What event to use when detecting collision
+  [Property]
+  var CollisionType : CollisionType = CollisionType.CollisionStarted;
+  
+  //What damage sound to play
+  [Property]
+  var DamageSound : SoundCue = null;
+  
+  //What team this object belongs to (Will only damage members of other teams)
+  [Property]
+  var Team : Integer = 2;
+  
+  //***************************************************************************
+  function Initialize(init : CogInitializer)
+  {
+    //Connect to the specified collision evnet
+    Zero.Connect(this.Owner, "`this.CollisionType`", this.OnCollision);
+  }
+  
+  //***************************************************************************
+  function OnCollision(event : CollisionEvent)
+  {
+    //If the other object doesnt have a CharacterInfo component or belongs to the same team, ignore it
+    if(event.OtherObject.LPK_CharacterInfo == null || event.OtherObject.LPK_CharacterInfo.Team == this.Team)
+      return;
+      
+    //Deal damage
+    event.OtherObject.LPK_CharacterInfo.TakeDamage(this.Damage);
+  }
+}

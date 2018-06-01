@@ -1,0 +1,70 @@
+/*******************************************************************************
+File:           LPK_VertexColorAnimator.zilchscript
+Authors:        Victor Cecci
+Last Updated:   5/7/2018
+Last Version:   1.4.0.941
+
+Description:
+  This component can be used in conjunction with a Sprite or SpriteText
+  component to animate its color based on a given gradient.
+  
+This script is a basic implementation of its functionality. It is designed for
+educational purposes and aimed to help beginners.
+
+Copyright 2018-2019, DigiPen Institute of Technology
+******************************************************************************/
+class LPK_VertexColorAnimator : ZilchComponent
+{
+  //Requeires either a Sprite or SpriteText component
+  [Dependency] var BaseSprite : BaseSprite;
+  
+  //Whether it should animate
+  [Property]
+  var Active : Boolean = true;
+  
+  //The gradient colors will be sampled from
+  [Property]
+  var Gradient : ColorGradient = null;
+  
+  //How long is one animation cycle (in seconds)
+  [Property]
+  var Duration : Real = 2.0;
+  
+  //What animation mode to use
+  [Property]
+  var Mode : AnimationPlayMode = AnimationPlayMode.Loop;
+  
+  //Internal Timer
+  var Timer : Real = 0.0;
+  
+  //***************************************************************************
+  function Initialize(init : CogInitializer)
+  {
+    //Connect to LogicUpdate event
+    Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+  }
+  
+  //***************************************************************************
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+    if(!this.Active || this.Gradient == null || this.Duration <= 0)
+      return;
+    
+    //Increment timer
+    this.Timer += event.Dt;
+    
+    //Reset Timer according to animation type
+    if(this.Timer > this.Duration)
+    {
+      if(this.Mode == AnimationPlayMode.Loop)
+        this.Timer = 0;
+      else if(this.Mode == AnimationPlayMode.PlayOnce)
+        this.Timer = this.Duration;
+      else if(this.Mode == AnimationPlayMode.Pingpong)
+        this.Timer = -this.Duration;
+    }
+    
+    //Set the color
+    this.BaseSprite.VertexColor = this.Gradient.Sample(Math.Abs(this.Timer) / this.Duration);
+  }
+}

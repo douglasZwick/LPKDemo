@@ -1,0 +1,8 @@
+[Version:1]
+ContentLibrary 
+{
+	var Name = "TryingOutTheLPK"
+	var LibraryId = 0x5b717d149d0d59a7
+	var SourceControlType = ""
+	var ReadOnly = false
+}
