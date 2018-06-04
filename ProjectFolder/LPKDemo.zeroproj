@@ -14,7 +14,7 @@ Cog
 	WindowLaunchSettings 
 	{
 		var LaunchFullscreen = true
-		var WindowedResolution = Integer2{}
+		var WindowedResolution = Integer2{1280, 720}
 	}
 	FrameRateSettings 
 	{

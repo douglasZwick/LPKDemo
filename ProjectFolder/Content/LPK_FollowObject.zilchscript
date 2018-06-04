@@ -25,6 +25,11 @@ class LPK_FollowObject : ZilchComponent
   [Property]
   var Offset : Real3 = Real3(0,0,0);
   
+  [Property]
+  var MinBounds : Real3;
+  [Property]
+  var MaxBounds : Real3;
+  
   //What percentage of the distance between my current position and the target's should I move every frame
   [Property][Slider(0, 1)]
   var InterpolationFactor : Real = 0.1;
@@ -47,6 +52,8 @@ class LPK_FollowObject : ZilchComponent
     var targetPos = this.ObjectToFollow.Cog.Transform.WorldTranslation + this.Offset;
     
     //Interpolate from current position to target object's position
-    this.Transform.WorldTranslation = Math.Lerp(this.Transform.WorldTranslation, targetPos, this.InterpolationFactor);
+    var destination = Math.Lerp(this.Transform.WorldTranslation, targetPos, this.InterpolationFactor);
+    
+    this.Transform.WorldTranslation = Math.Clamp(destination, this.MinBounds, this.MaxBounds);
   }
 }
