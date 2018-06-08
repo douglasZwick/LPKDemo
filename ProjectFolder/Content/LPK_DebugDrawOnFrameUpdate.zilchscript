@@ -1,8 +1,8 @@
 /*******************************************************************************
 File:           LPK_DebugDrawOnFrameUpdate.zilchscript
 Authors:        Doug Zwick
-Last Updated:   6/1/2018
-Last Version:   1.4.0.1018
+Last Updated:   6/8/2018
+Last Version:   1.4.0.1020
 
 Description:
   Calls DebugDraw on an object every frame, to aid in debugging.
@@ -12,40 +12,61 @@ educational purposes and aimed to help beginners.
 
 Copyright 2018-2019, DigiPen Institute of Technology
 ******************************************************************************/
+
+// The [RunInEditor] attribute causes this component to be initialized even
+// while it's in the editor (as opposed to in a game)
 [RunInEditor]
 class LPK_DebugDrawOnFrameUpdate : ZilchComponent
 {
-  [Property] var InGame : Boolean = true;
-  [Property] var InEditor : Boolean = true;
-  [Property] var Recursive : Boolean = false;
+  // Whether this object should be drawn while the game is running
+  [Property] var DrawInGame : Boolean = true;
+  // Whether this object should be drawn in the Level Window in the editor
+  [Property] var DrawInEditor : Boolean = true;
+  // Whether this object's children should also be drawn, recursively
+  [Property] var DrawRecursively : Boolean = false;
   
+  //***************************************************************************
   function Initialize(init : CogInitializer)
   {
+    // FrameUpdate is used so that drawing occurs even while the space is
+    // paused (as it is in the editor, for instance)
     Zero.Connect(this.Space, Events.FrameUpdate, this.OnFrameUpdate);
   }
   
+  //***************************************************************************
   function OnFrameUpdate(event : UpdateEvent)
   {
+    // If we're in the editor and we don't want to draw in editor, or if we're
+    // in the game and we don't want to draw in game, return early
     var isEditorMode = this.Space.IsEditorMode;
-    if (!this.InGame && !isEditorMode || !this.InEditor && isEditorMode)
+    if (!this.DrawInGame && !isEditorMode || !this.DrawInEditor && isEditorMode)
       return;
     
-    if (this.Recursive)
+    // Draw recursively if we should, and normally otherwise
+    if (this.DrawRecursively)
       this.RecursiveDraw(this.Owner);
     else
       this.Draw(this.Owner);
   }
   
+  //***************************************************************************
   function RecursiveDraw(cog : Cog)
   {
+    // First, draw the given cog
     this.Draw(cog);
     
+    // Then, pass each of its children (if any) into this function
     foreach (var child in cog.Children)
       this.RecursiveDraw(child);
   }
   
+  //***************************************************************************
   function Draw(cog : Cog)
   {
+    // Cog.DebugDraw() calls every function called "DebugDraw" on every
+    // component on that cog. This is used by colliders and physics effects
+    // etc., but Cog.DebugDraw() will also call user-created DebugDraw
+    // functions on user-created Zilch components
     cog.DebugDraw();
   }
 }

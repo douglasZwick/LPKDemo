@@ -1,0 +1,53 @@
+/*******************************************************************************
+File:           LPK_ForwardArrowOnDebugDraw.zilchscript
+Authors:        Doug Zwick
+Last Updated:   6/8/2018
+Last Version:   1.4.0.1020
+
+Description:
+  Draws an arrow pointing in this object's world forward direction when
+  DebugDraw is called. Requires an Orientation component.
+  
+This script is a basic implementation of its functionality. It is designed for
+educational purposes and aimed to help beginners.
+
+Copyright 2018-2019, DigiPen Institute of Technology
+******************************************************************************/
+
+// The [RunInEditor] attribute causes this component to be initialized even
+// while it's in the editor (as opposed to in a game)
+[RunInEditor]
+class LPK_ForwardArrowOnDebugDraw : ZilchComponent
+{
+  // Needed for Transform.WorldTranslation
+  [Dependency] var Transform : Transform;
+  // Needed for Orientation.WorldForward
+  [Dependency] var Orientation : Orientation;
+  
+  // How long the arrow should be, in world units
+  [Property] var Length : Real = 2;
+  // How wide the base of the arrow's head should be, in world units
+  [Property] var HeadSize : Real = 0.25;
+  // The color of the arrow
+  [Property] var Color : Real4 = Colors.Yellow;
+  
+  //***************************************************************************
+  function DebugDraw()
+  {
+    // We construct an arrow to set up and draw
+    var arrow = DebugLine();
+    
+    // The base of the arrow should be at this object's world translation
+    arrow.Start = this.Transform.WorldTranslation;
+    // To find the position of the head of the arrow, start at its base
+    // position and move forward a distance equal to the arrow's desired length
+    arrow.End = arrow.Start + this.Orientation.WorldForward * this.Length;
+    // Set the arrow's head size to match what is defined above
+    arrow.HeadSize = this.HeadSize;
+    // Set the arrow's color to match what is defined above
+    arrow.Color = this.Color;
+    
+    // Send the arrow off to the graphics system to be drawn this frame
+    DebugDraw.Add(arrow);
+  }
+}

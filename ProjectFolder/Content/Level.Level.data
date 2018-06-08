@@ -329,6 +329,12 @@ Level
 			var PaletteName = "5b717dd590b4f1de:WorldTiles"
 			var MeshThickness = 1
 		}
+		LPK_DebugDrawOnFrameUpdate 
+		{
+			var DrawInGame = true
+			var DrawInEditor = true
+			var DrawRecursively = false
+		}
 	}
 	Cog [ContextId:5]
 	{
@@ -418,7 +424,7 @@ Level
 				var UpdatePathOnCogChange = true
 				var UpdateCogOnInitialize = true
 				var ResolvedNullErrorOccurred = false
-				var Cog = 9
+				var Cog = 7
 				var PathPreference0 = CogPathPreference.CogRelative
 				var PathPreference1 = CogPathPreference.SpaceRelative
 				var PathPreference2 = CogPathPreference.Absolute
@@ -434,8 +440,20 @@ Level
 			var Offset = Real3{0, 0, 0}
 			var HalfSize = Real3{0.5, 0.5, 0.5}
 		}
+		Orientation 
+		{
+			var GlobalUp = Real3{0, 1, 0}
+			var LocalOrientationBasis = Quaternion{0, -0.707106769, 0, 0.707106769}
+			var DefaultBases = OrientationBases.ForwardXUpY
+		}
+		LPK_ForwardArrowOnDebugDraw 
+		{
+			var Length = 2
+			var HeadSize = 0.25
+			var Color = Real4{1, 0.840000272, 0, 1}
+		}
 	}
-	Cog [InheritId:"5b7195c1d304927a:KillZone"][ContextId:10]
+	Cog [InheritId:"5b7195c1d304927a:KillZone"][ContextId:9]
 	{
 		Transform 
 		{
@@ -445,10 +463,9 @@ Level
 		}
 		LPK_DebugDrawOnFrameUpdate 
 		{
-			var InGame = false
 		}
 	}
-	Cog [InheritId:"5b75826def667ab0:Star"][ContextId:11]
+	Cog [InheritId:"5b75826def667ab0:Star"][ContextId:10]
 	{
 		Transform 
 		{
@@ -457,7 +474,7 @@ Level
 			var Scale = Real3{1, 1, 1}
 		}
 	}
-	Cog [InheritId:"5b75826def667ab0:Star"][ContextId:12]
+	Cog [InheritId:"5b75826def667ab0:Star"][ContextId:11]
 	{
 		Transform 
 		{
@@ -466,7 +483,7 @@ Level
 			var Scale = Real3{1, 1, 1}
 		}
 	}
-	Cog [InheritId:"5b75826def667ab0:Star"][ContextId:13]
+	Cog [InheritId:"5b75826def667ab0:Star"][ContextId:12]
 	{
 		Transform 
 		{
@@ -475,7 +492,7 @@ Level
 			var Scale = Real3{1, 1, 1}
 		}
 	}
-	Cog [InheritId:"5b75826def667ab0:Star"][ContextId:14]
+	Cog [InheritId:"5b75826def667ab0:Star"][ContextId:13]
 	{
 		Transform 
 		{
@@ -489,7 +506,7 @@ Level
 			var Axis = Real3{0, 0, -1}
 		}
 	}
-	Cog [InheritId:"5b75826def667ab0:Star"][ContextId:15]
+	Cog [InheritId:"5b75826def667ab0:Star"][ContextId:14]
 	{
 		Transform 
 		{
